@@ -19,6 +19,10 @@ import com.alti.foodstore.shoppingcart.model.ProductItemDetail;
 import com.alti.foodstore.shoppingcart.service.IProductService;
 import com.alti.foodstore.shoppingcart.util.CustomErrorType;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ApiResponse;
+
 
 @RestController
 public class ShoppingCartController {
@@ -26,6 +30,7 @@ public class ShoppingCartController {
 	@Autowired
 	IProductService productService;
 	
+
 	@SuppressWarnings("unchecked")
 	@GetMapping("/api/alti/foodstore/products")
 	public ResponseEntity<?> getProductList() {

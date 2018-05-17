@@ -10,19 +10,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.alti.foodstore.shoppingcart.model.ProductItemDetail;
-import com.alti.foodstore.shoppingcart.rules.IRule;
 import com.alti.foodstore.shoppingcart.rules.impl.BakedBeanRule;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BakedBeanRuleTest {
 	
 	@InjectMocks
-	IRule bakedBeanRule;
+	BakedBeanRule bakedBeanRule;
 	
     @Before
 	public void setupMock() {
@@ -37,18 +35,19 @@ public class BakedBeanRuleTest {
 		productItemDetail.setProductCategory("Food");
 		productItemDetail.setProductName("Baked Beans");
 		productItemDetail.setPerUnitQty(Long.valueOf(1));
-		productItemDetail.setPurchasedQuantity(Long.valueOf(1));
+		productItemDetail.setPurchasedQuantity(Long.valueOf(3));
 		Double price = productItemDetail.getPrice() / productItemDetail.getPerUnitQty() * productItemDetail.getPurchasedQuantity();
 		productItemDetail.setPrice(price);
 		productMap.put(productItemDetail.getProductName().toLowerCase(), productItemDetail);
 		
-		Mockito.when(bakedBeanRule.addFreeProduct(productItemDetail,1,productMap)).thenReturn(1);
+		//Mockito.when(bakedBeanRule.addFreeProduct(productItemDetail,1,productMap)).thenReturn(1);
 		int result = bakedBeanRule.executeRule(productMap);
 		
 		ProductItemDetail updatedProductItemDetail = productMap.get("Baked Beans".toLowerCase());
 		assertNotNull(updatedProductItemDetail);
 		assertEquals(1,result);
 		assertEquals(1,updatedProductItemDetail.getFreeQuantity());
+		assertEquals(4,updatedProductItemDetail.getTotalQuantity());
 		
 		
 		

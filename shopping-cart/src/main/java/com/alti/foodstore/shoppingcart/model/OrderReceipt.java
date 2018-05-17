@@ -6,6 +6,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.swagger.annotations.ApiModel;
+
+@ApiModel(value = "OrderReceipt" , description = "Receipt of Products Ordered")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderReceipt {
 

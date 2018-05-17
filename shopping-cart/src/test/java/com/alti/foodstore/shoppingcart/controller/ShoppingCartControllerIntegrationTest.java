@@ -1,5 +1,10 @@
 package com.alti.foodstore.shoppingcart.controller;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,12 +32,6 @@ import com.alti.foodstore.shoppingcart.ShoppingCartApplication;
 import com.alti.foodstore.shoppingcart.model.OrderReceipt;
 import com.alti.foodstore.shoppingcart.model.ProductItem;
 import com.alti.foodstore.shoppingcart.service.IProductService;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = ShoppingCartApplication.class)
