@@ -57,7 +57,6 @@ public class InsuranceRule implements IRule {
 	
 	@Override
 	public String getRuleName() {
-		// TODO Auto-generated method stub
 		return "InsuranceRule";
 	}
 

@@ -19,25 +19,23 @@ public class BakedBeanRule implements IRule {
 	
 	public static final Logger logger = LoggerFactory.getLogger(BakedBeanRule.class);
 	
-	private final String BAKED_BEAN = "Baked Beans";
+	private final String BAKED_BEAN = "baked beans";
 
 	@Override
 	public int executeRule(Map<String, ProductItemDetail> productDetailMap) {
 		int flag = 0;
-		ProductItemDetail productItemDetail = productDetailMap.get(BAKED_BEAN.toLowerCase());
+		ProductItemDetail productItemDetail = productDetailMap.get(BAKED_BEAN);
 		
 		if(productItemDetail!=null && (productItemDetail.getPurchasedQuantity()>=3)) {
 			
 			logger.info("There is a 4 for 3 offer on Baked beans");
-			//Product prod = productRepository.findByProductName("Baked Beans");
+			
 			
 			long freeQuantity = productItemDetail.getPurchasedQuantity()/3;
 						
 			logger.info("freeQuantity:->",freeQuantity);
 			flag = addFreeProduct(productItemDetail,freeQuantity,productDetailMap);
 			
-			//flag = 1;
-		
 			
 		}
 		
@@ -46,7 +44,6 @@ public class BakedBeanRule implements IRule {
 	
 	@Override
 	public String getRuleName() {
-		// TODO Auto-generated method stub
 		return "BakedBeanRule";
 	}
 }

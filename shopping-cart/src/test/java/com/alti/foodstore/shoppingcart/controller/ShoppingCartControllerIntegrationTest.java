@@ -31,6 +31,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.alti.foodstore.shoppingcart.ShoppingCartApplication;
 import com.alti.foodstore.shoppingcart.model.OrderReceipt;
 import com.alti.foodstore.shoppingcart.model.ProductItem;
+import com.alti.foodstore.shoppingcart.model.ReturnResponse;
 import com.alti.foodstore.shoppingcart.service.IProductService;
 
 @RunWith(SpringRunner.class)
@@ -42,10 +43,7 @@ public class ShoppingCartControllerIntegrationTest {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	/** The iProductService */
-	@Mock
-	private IProductService iProductService;
-
+	
 	/** The session. */
 	@Mock
 	private HttpSession session;
@@ -67,15 +65,14 @@ public class ShoppingCartControllerIntegrationTest {
 	@Test
 	public void testGetProductList() {
 
-		ResponseEntity<List<ProductItem>> responseEntity = restTemplate.exchange("/api/alti/foodstore/products",
-				HttpMethod.GET, null, new ParameterizedTypeReference<List<ProductItem>>() {
+		ResponseEntity<ReturnResponse> responseEntity = restTemplate.exchange("/api/alti/foodstore/products",
+				HttpMethod.GET, null, new ParameterizedTypeReference<ReturnResponse>() {
 		});
 
-		List<ProductItem> returnMessage= responseEntity.getBody();
-
-		assertNotNull(returnMessage);
-		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-		assertNotSame(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+		
+		assertNotNull(responseEntity.getBody().getData());
+		assertEquals(HttpStatus.OK.toString(), responseEntity.getBody().getReturnCode());
+		assertNotSame(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getReturnCode());
 	}
 	
 	/**
@@ -98,33 +95,48 @@ public class ShoppingCartControllerIntegrationTest {
 
 		HttpEntity<ProductItem> requestObj = new HttpEntity<>(productItem, requestHeaders);
 		
-		ResponseEntity<ProductItem> responseEntity = restTemplate.exchange("/api/alti/foodstore/products", HttpMethod.POST, requestObj,
-				ProductItem.class);
+		ResponseEntity<ReturnResponse> responseEntity = restTemplate.exchange("/api/alti/foodstore/products", HttpMethod.POST, requestObj,
+				ReturnResponse.class);
 
-		ProductItem savedProduct= responseEntity.getBody();
 
-		assertNotNull(savedProduct);
-		assertTrue(savedProduct.getProductId()>0);
-		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-		assertNotSame(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+		assertNotNull(responseEntity.getBody());
+		assertEquals(HttpStatus.OK.toString(), responseEntity.getBody().getReturnCode());
+		assertNotSame(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getReturnCode());
 	}
 	
 	/**
 	 * Test delete Product.
 	 */
 	@Test
-	public void testDeleteProduct() {
+	public void testDeleteProductSuccess() {
 
-		ResponseEntity<String> responseEntity = restTemplate.exchange("/api/alti/foodstore/products/TV 25 inch XamZung",
-				HttpMethod.DELETE, null, new ParameterizedTypeReference<String>() {
+		ResponseEntity<ReturnResponse> responseEntity = restTemplate.exchange("/api/alti/foodstore/products/TV 25 inch XamZung",
+				HttpMethod.DELETE, null, new ParameterizedTypeReference<ReturnResponse>() {
 		});
 
 		//List<ProductItem> returnMessage= responseEntity.getBody();
 
 		assertNotNull(responseEntity.getBody());
-		assertEquals("TV 25 inch XamZung is deleted",responseEntity.getBody());
-		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-		assertNotSame(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+		assertEquals("Product is deleted",responseEntity.getBody().getReturnDescription());
+		assertEquals(HttpStatus.OK.toString(), responseEntity.getBody().getReturnCode());
+		assertNotSame(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getReturnCode());
+	}
+	
+	/**
+	 * Test delete Product.
+	 */
+	@Test
+	public void testDeleteProductFailure() {
+
+		ResponseEntity<ReturnResponse> responseEntity = restTemplate.exchange("/api/alti/foodstore/products/XYZ",
+				HttpMethod.DELETE, null, new ParameterizedTypeReference<ReturnResponse>() {
+		});
+
+	
+		assertNotNull(responseEntity.getBody());
+		assertEquals("Invalid Product Name",responseEntity.getBody().getReturnDescription());
+		assertEquals(HttpStatus.NOT_FOUND.toString(), responseEntity.getBody().getReturnCode());
+		assertNotSame(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getReturnCode());
 	}
 	
 	
@@ -132,7 +144,7 @@ public class ShoppingCartControllerIntegrationTest {
 	 * Test Order Products.
 	 */
 	@Test
-	public void testOrderProducts() {
+	public void testOrderProductsSuccess() {
 
 		List<String> shoppingCartList = new ArrayList<>();
 		shoppingCartList.add("Paracetamol XYZ 20 Tablets");
@@ -154,17 +166,37 @@ public class ShoppingCartControllerIntegrationTest {
 
 		HttpEntity<List<String>> requestObj = new HttpEntity<>(shoppingCartList, requestHeaders);
 		
-		ResponseEntity<OrderReceipt> responseEntity = restTemplate.exchange("/api/alti/foodstore/products/order", HttpMethod.POST, requestObj,
-				OrderReceipt.class);
+		ResponseEntity<ReturnResponse> responseEntity = restTemplate.exchange("/api/alti/foodstore/products/order", HttpMethod.POST, requestObj,
+				ReturnResponse.class);
 
-		OrderReceipt orderReceipt= responseEntity.getBody();
-
-		assertNotNull(orderReceipt);
-		assertTrue(orderReceipt.getOrderDetailList().size()>0);
-		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-		assertNotSame(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-		assertNotSame(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+		
+		assertNotNull(responseEntity.getBody());
+		assertEquals(HttpStatus.OK.toString(), responseEntity.getBody().getReturnCode());
+		assertNotSame(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getReturnCode());
+		assertNotSame(HttpStatus.NOT_FOUND.toString(), responseEntity.getBody().getReturnCode());
 	}
 	
+	
+	@Test
+	public void testOrderProductsFailure() {
+
+		List<String> shoppingCartList = new ArrayList<>();
+				
+		HttpHeaders requestHeaders = new HttpHeaders();
+		List<MediaType> mediaTypeList = new ArrayList<MediaType>();
+		mediaTypeList.add(MediaType.APPLICATION_JSON);
+		requestHeaders.setAccept(mediaTypeList);
+		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<List<String>> requestObj = new HttpEntity<>(shoppingCartList, requestHeaders);
+		
+		ResponseEntity<ReturnResponse> responseEntity = restTemplate.exchange("/api/alti/foodstore/products/order", HttpMethod.POST, requestObj,
+				ReturnResponse.class);
+
+		assertNotNull(responseEntity.getBody());
+		assertEquals(HttpStatus.NOT_FOUND.toString(), responseEntity.getBody().getReturnCode());
+		assertNotSame(HttpStatus.BAD_REQUEST.toString(), responseEntity.getBody().getReturnCode());
+	
+	}
 
 }

@@ -84,7 +84,6 @@ public class ParacetamolRule implements IRule{
 	
 	@Override
 	public String getRuleName() {
-		// TODO Auto-generated method stub
 		return "ParacetamolRule";
 	}
 

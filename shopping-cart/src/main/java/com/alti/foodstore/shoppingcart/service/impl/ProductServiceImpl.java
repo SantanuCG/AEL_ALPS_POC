@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.alti.foodstore.shoppingcart.entities.Product;
@@ -111,6 +110,8 @@ public class ProductServiceImpl implements IProductService {
 					productItem.setProductId(insertedProduct.getProductId());
 				}
 
+			}else {
+				productItem.setProductId(Long.valueOf(0));
 			}
 
 		}
@@ -145,7 +146,7 @@ public class ProductServiceImpl implements IProductService {
 
 					productMap.put(productName.toLowerCase(), productItemDetail);
 				} else {
-					ProductItemDetail productItemDetail = (ProductItemDetail) productMap.get(productName.toLowerCase());
+					ProductItemDetail productItemDetail = productMap.get(productName.toLowerCase());
 					long purchasedQuantity = productItemDetail.getPurchasedQuantity() + product.getPerUnitQty();
 					productItemDetail.setPurchasedQuantity(purchasedQuantity);
 					productItemDetail.setTotalQuantity(purchasedQuantity);

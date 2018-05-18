@@ -23,7 +23,7 @@ public class ElectronicApplianceRule implements IRule {
 
 		for (Map.Entry<String, ProductItemDetail> entry : productDetailMap.entrySet()) 
 		{
-			ProductItemDetail prodObj = (ProductItemDetail) entry.getValue();
+			ProductItemDetail prodObj = entry.getValue();
 			
 			if (prodObj.getProductCategory().equalsIgnoreCase(ELECTRONICS) && totalCount <= 5) {
 				logger.info("There is a 7% discount if you buy more than 1 Electric appliance");
@@ -61,7 +61,6 @@ public class ElectronicApplianceRule implements IRule {
 	
 	@Override
 	public String getRuleName() {
-		// TODO Auto-generated method stub
 		return "ElectronicApplianceRule";
 	}
 

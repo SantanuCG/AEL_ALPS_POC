@@ -19,13 +19,13 @@ public class BreadLoafRule implements IRule {
 	
 	public static final Logger logger = LoggerFactory.getLogger(BreadLoafRule.class);
 	
-	private final String BREAD_LOAF = "Loaf of Bread";
+	private final String BREAD_LOAF = "loaf of bread";
 
 	@Override
 	public int executeRule(Map<String, ProductItemDetail> productDetailMap) {
 		int flag = 0;
 		
-		ProductItemDetail productItemDetail = productDetailMap.get(BREAD_LOAF.toLowerCase());
+		ProductItemDetail productItemDetail = productDetailMap.get(BREAD_LOAF);
 		
 		if(productItemDetail!= null && (productItemDetail.getPurchasedQuantity()>=1)) {
 			
@@ -36,8 +36,7 @@ public class BreadLoafRule implements IRule {
 			logger.info("freeQuantity:->",freeQuantity);
 			flag = addFreeProduct(productItemDetail,freeQuantity,productDetailMap);
 			
-			//flag = 1;
-				
+					
 		}
 		
 		return flag;
@@ -45,7 +44,6 @@ public class BreadLoafRule implements IRule {
 
 	@Override
 	public String getRuleName() {
-		// TODO Auto-generated method stub
 		return "BreadLoafRule";
 	}
 

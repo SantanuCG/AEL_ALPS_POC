@@ -79,6 +79,53 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
+			<plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>true</springmvc>
+                            <locations>com.alti.foodstore.shoppingcart.controller.v1</locations>
+                            <schemes>http,https</schemes>
+                            <host>localhost:8080</host>
+                            <basePath>/api-doc</basePath>
+                            <info>
+                                <title>Your API name</title>
+                                <version>v1</version>
+                                <description> description of your API</description>
+                                <termsOfService>
+                                    http://www.yourterms.com
+                                </termsOfService>
+                                <contact>
+                                    <email>santanu.ganguli@capgemini.com</email>
+                                    <name>Santanu Ganguli</name>
+                                    <url>http://www.contact-url.com</url>
+                                </contact>
+                                <license>
+                                    <url>http://www.licence-url.com</url>
+                                    <name>Commercial</name>
+                                </license>
+                            </info>
+                            <!-- Support classpath or file absolute path here.
+                            1) classpath e.g: "classpath:/markdown.hbs", "classpath:/templates/hello.html"
+                            2) file e.g: "${basedir}/src/main/resources/markdown.hbs",
+                                "${basedir}/src/main/resources/template/hello.html" -->
+                            <templatePath>${basedir}/templates/strapdown.html.hbs</templatePath>
+                            <outputPath>${basedir}/generated/document.html</outputPath>
+                            <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
+                            <!--  <securityDefinitions>
+                                <securityDefinition>
+                                    <name>basicAuth</name>
+                                    <type>basic</type>
+                                </securityDefinition>
+                            </securityDefinitions> -->
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+            </plugin> 
 		</plugins>
 	</build>
 
