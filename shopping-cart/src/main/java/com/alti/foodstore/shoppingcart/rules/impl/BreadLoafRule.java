@@ -31,7 +31,7 @@ public class BreadLoafRule implements IRule {
 			
 			logger.info("There is a 2 for 1 offer on Loaf of Bread");
 						
-			long freeQuantity = productItemDetail.getPurchasedQuantity();
+			long freeQuantity = productItemDetail.getPurchasedQuantity()*2;
 						
 			logger.info("freeQuantity:->",freeQuantity);
 			flag = addFreeProduct(productItemDetail,freeQuantity,productDetailMap);

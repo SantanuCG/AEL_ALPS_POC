@@ -27,14 +27,14 @@ import com.alti.foodstore.shoppingcart.rules.impl.PorkSausageRule;
 import com.alti.foodstore.shoppingcart.rules.impl.VATRule;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BakedBeanRuleTest {
-	
+public class InsuranceRuleTest {
+
 	@InjectMocks
 	RulesExecutor rulesExecutorMock;
 	
-    @Before
+	@Before
 	public void setupMock() {
-    	List<IRule> ruleList= new ArrayList<>();
+		List<IRule> ruleList= new ArrayList<>();
 		ruleList.add(new BakedBeanRule());
 		ruleList.add(new PorkSausageRule());
 		ruleList.add(new InsuranceRule());
@@ -44,30 +44,38 @@ public class BakedBeanRuleTest {
 		ruleList.add(new ParacetamolRule());
 		
 		rulesExecutorMock = new RulesExecutor(ruleList);
-	    MockitoAnnotations.initMocks(this);
-	}
-	
-	@Test
-	public void testBakedBeanRule() {
-		Map<String, ProductItemDetail> productMap = new HashMap<>();
-		ProductItemDetail productItemDetail = new ProductItemDetail();
-		productItemDetail.setProductId(Long.valueOf(1));
-		productItemDetail.setProductCategory("Food");
-		productItemDetail.setProductName("Baked Beans");
-		productItemDetail.setPerUnitQty(Long.valueOf(1));
-		productItemDetail.setPurchasedQuantity(Long.valueOf(3));
-		productItemDetail.setPrice(1.30);
-		productMap.put(productItemDetail.getProductName().toLowerCase(), productItemDetail);
 		
-		rulesExecutorMock.execute(productMap);
-		
-		ProductItemDetail updatedProductItemDetail = productMap.get("Baked Beans".toLowerCase());
-		assertNotNull(updatedProductItemDetail);
-		assertEquals(1,updatedProductItemDetail.getFreeQuantity());
-		assertEquals(4,updatedProductItemDetail.getTotalQuantity());
-		
-		
-		
+		MockitoAnnotations.initMocks(this);
 	}
 
+	@Test
+	public void testInsuranceRule() {
+		Map<String, ProductItemDetail> productMap = new HashMap<>();
+		ProductItemDetail insuranceObj = new ProductItemDetail();
+		insuranceObj.setProductId(Long.valueOf(1));
+		insuranceObj.setProductCategory("Insurance");
+		insuranceObj.setProductName("Insurance per Electric Appliance");
+		insuranceObj.setPerUnitQty(Long.valueOf(1));
+		insuranceObj.setPurchasedQuantity(Long.valueOf(1));
+		insuranceObj.setPrice(120.00);
+		productMap.put(insuranceObj.getProductName().toLowerCase(), insuranceObj);
+
+		ProductItemDetail electronicAppObj = new ProductItemDetail();
+		electronicAppObj.setProductId(Long.valueOf(1));
+		electronicAppObj.setProductCategory("Electronics");
+		electronicAppObj.setProductName("Microwave Oven");
+		electronicAppObj.setPerUnitQty(Long.valueOf(1));
+		electronicAppObj.setPurchasedQuantity(Long.valueOf(1));
+		electronicAppObj.setPrice(120.00);
+		productMap.put(electronicAppObj.getProductName().toLowerCase(), electronicAppObj);
+
+		rulesExecutorMock.execute(productMap);
+
+		ProductItemDetail updatedProductItemDetail = productMap.get("Insurance per Electric Appliance".toLowerCase());
+		//assertEquals(1, result);
+		assertNotNull(updatedProductItemDetail);
+		assertEquals(Double.valueOf(0.0), updatedProductItemDetail.getVat());
+		assertEquals(Double.valueOf(20.0), updatedProductItemDetail.getDiscount());
+
+	}
 }

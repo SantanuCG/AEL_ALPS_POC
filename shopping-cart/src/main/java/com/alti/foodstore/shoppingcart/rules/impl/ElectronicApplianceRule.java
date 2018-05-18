@@ -51,7 +51,7 @@ public class ElectronicApplianceRule implements IRule {
 		for (Map.Entry<String, ProductItemDetail> entry : productDetailMap.entrySet()) {
 			ProductItemDetail prodObj = (ProductItemDetail) entry.getValue();
 			if (prodObj.getProductCategory().equalsIgnoreCase(ELECTRONICS)) {
-				totalCount += 1;
+				totalCount += prodObj.getPurchasedQuantity();
 			}
 
 		}

@@ -27,7 +27,7 @@ import com.alti.foodstore.shoppingcart.rules.impl.PorkSausageRule;
 import com.alti.foodstore.shoppingcart.rules.impl.VATRule;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BakedBeanRuleTest {
+public class BreadLoafRuleTest {
 	
 	@InjectMocks
 	RulesExecutor rulesExecutorMock;
@@ -48,23 +48,23 @@ public class BakedBeanRuleTest {
 	}
 	
 	@Test
-	public void testBakedBeanRule() {
+	public void testBreadLoafRule() {
 		Map<String, ProductItemDetail> productMap = new HashMap<>();
 		ProductItemDetail productItemDetail = new ProductItemDetail();
 		productItemDetail.setProductId(Long.valueOf(1));
 		productItemDetail.setProductCategory("Food");
-		productItemDetail.setProductName("Baked Beans");
+		productItemDetail.setProductName("Loaf of Bread");
 		productItemDetail.setPerUnitQty(Long.valueOf(1));
-		productItemDetail.setPurchasedQuantity(Long.valueOf(3));
-		productItemDetail.setPrice(1.30);
+		productItemDetail.setPurchasedQuantity(Long.valueOf(2));
+		productItemDetail.setPrice(1.00);
 		productMap.put(productItemDetail.getProductName().toLowerCase(), productItemDetail);
 		
 		rulesExecutorMock.execute(productMap);
 		
-		ProductItemDetail updatedProductItemDetail = productMap.get("Baked Beans".toLowerCase());
+		ProductItemDetail updatedProductItemDetail = productMap.get("Loaf of Bread".toLowerCase());
 		assertNotNull(updatedProductItemDetail);
-		assertEquals(1,updatedProductItemDetail.getFreeQuantity());
-		assertEquals(4,updatedProductItemDetail.getTotalQuantity());
+		assertEquals(4,updatedProductItemDetail.getFreeQuantity());
+		assertEquals(6,updatedProductItemDetail.getTotalQuantity());
 		
 		
 		
