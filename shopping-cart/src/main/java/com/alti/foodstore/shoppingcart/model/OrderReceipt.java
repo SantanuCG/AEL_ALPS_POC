@@ -1,10 +1,12 @@
 package com.alti.foodstore.shoppingcart.model;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.util.concurrent.AtomicDouble;
 
 import io.swagger.annotations.ApiModel;
 
@@ -40,11 +42,17 @@ public class OrderReceipt {
 	 */
 	@JsonProperty("grandTotal")
 	public Double getGrandTotal() {
-		grandTotal=0.0;
-		for(ProductItemDetail productItemDetail:orderDetailList) {
-			grandTotal+=productItemDetail.getTotalAmount();
-		}
-		return grandTotal;
+		AtomicDouble gT = new AtomicDouble(0.00);
+		
+		orderDetailList.forEach(productItemDetail->{
+			          gT.getAndAdd(productItemDetail.getTotalAmount());
+			        });
+		
+		grandTotal = gT.get();
+		
+		DecimalFormat df = new DecimalFormat("######.##");
+		
+		return Double.valueOf(df.format(grandTotal));
 	}
 	/**
 	 * @param grandTotal the grandTotal to set

@@ -2,6 +2,7 @@ package com.alti.foodstore.shoppingcart.model;
 
 import java.text.DecimalFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -32,7 +33,24 @@ public class ProductItemDetail extends ProductItem {
 	@JsonProperty("message")
 	private String message;
 
+	@JsonIgnore
+	private boolean consideredInTotalAmount;
+	
+	public ProductItemDetail() {
 		
+	}
+
+	public ProductItemDetail(long freeQuantity, long purchasedQuantity, long totalQuantity, Double vat, Double discount,
+			Double totalAmount, String message) {
+		super();
+		this.freeQuantity = freeQuantity;
+		this.purchasedQuantity = purchasedQuantity;
+		this.totalQuantity = totalQuantity;
+		this.vat = vat;
+		this.discount = discount;
+		this.totalAmount = totalAmount;
+		this.message = message;
+	}
 
 	/**
 	 * @return the freeQuantity
@@ -135,9 +153,13 @@ public class ProductItemDetail extends ProductItem {
 	 */
 	@JsonProperty("total-amount")
 	public Double getTotalAmount() {
+		if(consideredInTotalAmount) {
 		totalAmount= (purchasedQuantity/perUnitQty*price);
 		totalAmount+=totalAmount*(vat>0?vat/100:0);
 		totalAmount-=totalAmount*(discount>0?discount/100:0);
+		}else {
+			totalAmount = Double.valueOf(0.00);
+		}
 		
 		DecimalFormat df = new DecimalFormat("######.##");
 		
@@ -150,6 +172,20 @@ public class ProductItemDetail extends ProductItem {
 	@JsonProperty("total-amount")
 	public void setTotalAmount(Double totalAmount) {
 		this.totalAmount = totalAmount;
+	}
+
+	/**
+	 * @return the consideredInTotalAmount
+	 */
+	public boolean isConsideredInTotalAmount() {
+		return consideredInTotalAmount;
+	}
+
+	/**
+	 * @param consideredInTotalAmount the consideredInTotalAmount to set
+	 */
+	public void setConsideredInTotalAmount(boolean consideredInTotalAmount) {
+		this.consideredInTotalAmount = consideredInTotalAmount;
 	}
 	
 	

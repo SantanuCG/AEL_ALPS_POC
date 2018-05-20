@@ -1,6 +1,7 @@
 package com.alti.foodstore.shoppingcart.rules.impl;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class ParacetamolRule implements IRule{
 	    	if(totalParacetamolCount > 20) {
 				logger.error("The law says that you cannot buy more than 20 tablets of paracetamol in the same purchase");
 				productItemDetail.setMessage("The law says that you cannot buy more than 20 tablets of paracetamol in the same purchase");
-				productItemDetail.setPrice(0.0);
+				productItemDetail.setConsideredInTotalAmount(false);
 				productDetailMap.replace(productItemDetail.getProductName().toLowerCase(), productItemDetail);
 				flag = 1;
 				
@@ -45,7 +46,7 @@ public class ParacetamolRule implements IRule{
 				long freeQuantity = productItemDetail.getPurchasedQuantity();
 				flag = addFreeProduct(productItemDetail,freeQuantity,productDetailMap);
 				totalParacetamolCount+=freeQuantity;
-				//flag = 1;
+				flag = 1;
 			}
 	    	
 	    }
@@ -57,7 +58,7 @@ public class ParacetamolRule implements IRule{
 		    if(totalParacetamolCount > 20) {
 				logger.error("The law says that you cannot buy more than 20 tablets of paracetamol in the same purchase");
 				productItemDetail.setMessage("The law says that you cannot buy more than 20 tablets of paracetamol in the same purchase");
-				productItemDetail.setPrice(0.0);
+				productItemDetail.setConsideredInTotalAmount(false);
 				productDetailMap.replace(productItemDetail.getProductName().toLowerCase(), productItemDetail);
 				flag = 1;
 				
@@ -81,6 +82,8 @@ public class ParacetamolRule implements IRule{
 	    
 	    return totalParacetamolCount;
 	}
+	
+	
 	
 	@Override
 	public String getRuleName() {

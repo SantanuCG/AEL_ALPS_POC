@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -43,17 +45,11 @@ public class ProductServiceImpl implements IProductService {
 	public List<ProductItem> listAllProducts() {
 		List<Product> productList = productRepository.findAll();
 
-		List<ProductItem> productDetailsList = new ArrayList<>();
+		List<ProductItem> productDetailsList = productList.stream()
+				.map(p-> new ProductItem(p.getProductId(), p.getProductName(),p.getPerUnitQty(), 
+						p.getPrice(),p.getProductCategory().getCategoryName())).collect(Collectors.toList());
+			
 
-		for (Product product : productList) {
-			ProductItem productDetail = new ProductItem();
-			productDetail.setProductId(product.getProductId());
-			productDetail.setProductName(product.getProductName());
-			productDetail.setPrice(product.getPrice());
-			productDetail.setPerUnitQty(product.getPerUnitQty());
-			productDetail.setProductCategory(product.getProductCategory().getCategoryName());
-			productDetailsList.add(productDetail);
-		}
 
 		return productDetailsList;
 	}
@@ -129,35 +125,37 @@ public class ProductServiceImpl implements IProductService {
 
 		Map<String, ProductItemDetail> productMap = new HashMap<>();
 
-		for (String productName : prodcutsOrdered) {
-
-			Product product = findProduct(productName, productList);
-
-			if (product != null) {
-				if (productMap.get(productName.toLowerCase()) == null) {
-					ProductItemDetail productItemDetail = new ProductItemDetail();
-					productItemDetail.setProductId(product.getProductId());
-					productItemDetail.setProductCategory(product.getProductCategory().getCategoryName());
-					productItemDetail.setProductName(product.getProductName());
-					productItemDetail.setPerUnitQty(product.getPerUnitQty());
-					productItemDetail.setPurchasedQuantity(product.getPerUnitQty());
-					Double price = product.getPrice() / product.getPerUnitQty() * productItemDetail.getPurchasedQuantity();
-					productItemDetail.setPrice(price);
-
-					productMap.put(productName.toLowerCase(), productItemDetail);
-				} else {
-					ProductItemDetail productItemDetail = productMap.get(productName.toLowerCase());
-					long purchasedQuantity = productItemDetail.getPurchasedQuantity() + product.getPerUnitQty();
-					productItemDetail.setPurchasedQuantity(purchasedQuantity);
-					productItemDetail.setTotalQuantity(purchasedQuantity);
-					Double price = product.getPrice() / product.getPerUnitQty() * productItemDetail.getPurchasedQuantity();
-					productItemDetail.setPrice(price);
-
-					productMap.replace(productName.toLowerCase(), productItemDetail);
-				}
-			}
-
-		}
+		prodcutsOrdered.forEach(productName -> {
+						Optional<Product> prod = findProduct(productName, productList);
+						if(prod.isPresent()) 
+						{
+							Product product = prod.get();
+							
+							ProductItemDetail productItemDetail = productMap.entrySet().stream()
+											.filter(e -> e.getKey().equals(productName.toLowerCase()))
+											.map(Map.Entry::getValue)
+											.findFirst() 
+									 		.orElse(null);
+							
+							if(productItemDetail==null) {
+								productItemDetail = new ProductItemDetail();
+								productItemDetail.setProductId(product.getProductId());
+								productItemDetail.setProductCategory(product.getProductCategory().getCategoryName());
+								productItemDetail.setProductName(product.getProductName());
+								productItemDetail.setPerUnitQty(product.getPerUnitQty());
+								productItemDetail.setPurchasedQuantity(product.getPerUnitQty());
+								productItemDetail.setPrice(product.getPrice());
+								productItemDetail.setConsideredInTotalAmount(true);
+							}else {
+								long purchasedQuantity = productItemDetail.getPurchasedQuantity() + product.getPerUnitQty();
+								productItemDetail.setPurchasedQuantity(purchasedQuantity);
+								productItemDetail.setTotalQuantity(purchasedQuantity);
+																
+							}
+							
+							productMap.put(productName.toLowerCase(), productItemDetail);
+						}
+		});
 
 		return productMap;
 	}
@@ -165,18 +163,12 @@ public class ProductServiceImpl implements IProductService {
 	@Override
 	public OrderReceipt getOrderedProductReceipt(List<String> prodcutsOrdered) {
 
-		List<ProductItemDetail> finalProductItemDetailList = new ArrayList<>();
 		OrderReceipt orderReceipt = new OrderReceipt();
-
 		Map<String, ProductItemDetail> productDetailMap = getConsolidateProductOrderList(prodcutsOrdered);
 		
 		iRulesExecutor.execute(productDetailMap);
-
-		for (Map.Entry<String, ProductItemDetail> entry : productDetailMap.entrySet()) {
-			finalProductItemDetailList.add(entry.getValue());
-
-		}
-
+		
+		List<ProductItemDetail> finalProductItemDetailList = new ArrayList<>(productDetailMap.values());
 		orderReceipt.setOrderDetailList(finalProductItemDetailList);
 
 		return orderReceipt;
@@ -185,17 +177,9 @@ public class ProductServiceImpl implements IProductService {
 	/*
 	 * Find product by name
 	 */
-	private Product findProduct(String productName, List<Product> productList) {
-		Product product = null;
+	private Optional<Product> findProduct(String productName, List<Product> productList) {
+			return productList.stream().filter(prod -> productName.equalsIgnoreCase(prod.getProductName())).findFirst();
 
-		for (Product prod : productList) {
-			if (productName.equalsIgnoreCase(prod.getProductName())) {
-				product = prod;
-				break;
-			}
-		}
-
-		return product;
 	}
 
 }

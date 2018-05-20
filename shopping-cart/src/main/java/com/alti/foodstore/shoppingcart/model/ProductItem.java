@@ -25,6 +25,19 @@ public class ProductItem {
 	@JsonProperty("productCategory")
 	protected String productCategory;
 
+	public ProductItem() {
+		
+	}
+	
+	public ProductItem(Long productId, String productName, long perUnitQty, Double price, String productCategory) {
+		super();
+		this.productId = productId;
+		this.productName = productName;
+		this.perUnitQty = perUnitQty;
+		this.price = price;
+		this.productCategory = productCategory;
+	}
+
 	/**
 	 * @return the productId
 	 */
