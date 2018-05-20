@@ -10,16 +10,20 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.alti.foodstore.shoppingcart.entities.Product;
 import com.alti.foodstore.shoppingcart.entities.ProductCategory;
 import com.alti.foodstore.shoppingcart.model.ProductItemDetail;
 import com.alti.foodstore.shoppingcart.repository.IProductRepository;
 import com.alti.foodstore.shoppingcart.rules.IRule;
+import com.alti.foodstore.shoppingcart.rules.executor.IRulesExecutor;
 import com.alti.foodstore.shoppingcart.rules.executor.impl.RulesExecutor;
 import com.alti.foodstore.shoppingcart.rules.impl.BakedBeanRule;
 import com.alti.foodstore.shoppingcart.rules.impl.BreadLoafRule;
@@ -29,19 +33,23 @@ import com.alti.foodstore.shoppingcart.rules.impl.ParacetamolRule;
 import com.alti.foodstore.shoppingcart.rules.impl.PorkSausageRule;
 import com.alti.foodstore.shoppingcart.rules.impl.VATRule;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PorkSausageRuleTest {
 
 	@InjectMocks
 	RulesExecutor rulesExecutorMock;
+	
+	@Mock
+	PorkSausageRule porkSausageRule;
 
 	@Mock
-	IProductRepository productRepositoryMock;
+	IProductRepository productRepository;
 
 	@Before
 	public void setupMock() {
 		List<IRule> ruleList = new ArrayList<>();
 		ruleList.add(new BakedBeanRule());
-		ruleList.add(new PorkSausageRule());
+		ruleList.add(porkSausageRule);
 		ruleList.add(new InsuranceRule());
 		ruleList.add(new ElectronicApplianceRule());
 		ruleList.add(new VATRule());
@@ -74,7 +82,9 @@ public class PorkSausageRuleTest {
 		bakedBeanProduct.setPerUnitQty(Long.valueOf(1));
 		productItemDetail.setPrice(3.00);
 
-		Mockito.when(productRepositoryMock.findByProductName("Baked Beans")).thenReturn(bakedBeanProduct);
+		Mockito.when(productRepository.findByProductName("Baked Beans")).thenReturn(bakedBeanProduct);
+		Mockito.when(porkSausageRule.executeRule(productMap)).thenCallRealMethod();
+		
 
 		rulesExecutorMock.execute(productMap);
 
